@@ -2,7 +2,7 @@ package admin_folder;
 
 import java.io.Serializable;
 
-public abstract class Product implements Serializable {
+public class Product implements Serializable {
     private String id;
     private String brand;
     private String name;
@@ -18,6 +18,19 @@ public abstract class Product implements Serializable {
         this.name = name;
         this.price = price;
         this.describe = describe;
+        this.quantity = quantity;
+    }
+
+    public Product(String id, String brand, String name) {
+        this.id = id;
+        this.brand = brand;
+        this.name = name;
+    }
+
+    public Product(long price, int quantity, String describe) {
+        this.price = price;
+        this.describe = describe;
+        this.quantity = quantity;
     }
 
     public String getId() {
@@ -72,6 +85,6 @@ public abstract class Product implements Serializable {
     public String toString() {
         return "Mã sản phẩm: '" + id + '\'' +
                 ", Hãng: '" + brand + '\'' +
-                ", Tên sản phẩm'" + name + '\'';
+                ", Tên sản phẩm: '" + name + '\'';
     }
 }

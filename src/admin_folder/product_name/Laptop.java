@@ -3,15 +3,24 @@ package admin_folder.product_name;
 import admin_folder.Product;
 import admin_folder.Screen;
 
-public class Laptop extends Product {
+import java.io.Serializable;
+
+public class Laptop extends Product implements Serializable {
     private int memory;
     private int memoryRam;
     private Screen screen;
 
     public Laptop() {}
 
-    public Laptop(String id, String brand, String name, long price, int quantity, String describe, int memory, int memoryRam, Screen screen) {
+    public Laptop(String id, String brand, String name, int memory, int memoryRam, Screen screen, long price, int quantity, String describe) {
         super(id, brand, name, price, quantity, describe);
+        this.memory = memory;
+        this.memoryRam = memoryRam;
+        this.screen = screen;
+    }
+
+    public Laptop(String id, String brand, String name, int memory, int memoryRam, Screen screen) {
+        super(id, brand, name);
         this.memory = memory;
         this.memoryRam = memoryRam;
         this.screen = screen;
@@ -43,9 +52,9 @@ public class Laptop extends Product {
 
     @Override
     public String toString() {
-        return "admin_folder.product_name.Laptop{" +
+        return "Laptop {" +
                 super.toString() +
-                "Bộ nhớ: " + memory +
+                ", Bộ nhớ: " + memory +
                 ", Ram: " + memoryRam +
                 ", Kích thước màn hình: " + screen.getSize() +
                 ", Độ phân giải màn hình: " + screen.getResolution() +

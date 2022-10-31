@@ -2,14 +2,21 @@ package admin_folder.product_name;
 
 import admin_folder.Product;
 
-public class Phone extends Product {
+import java.io.Serializable;
+
+public class Phone extends Product implements Serializable {
     private int simQuantity;
     private String network;
     private String category;
 
-    public Phone() {}
+    public Phone(String id, String brand, String name, int simQuantity, String network, String category) {
+        super(id, brand, name);
+        this.simQuantity = simQuantity;
+        this.network = network;
+        this.category = category;
+    }
 
-    public Phone(String id, String brand, String name, long price, int quantity, String describe, int simQuantity, String network, String category) {
+    public Phone(String id, String brand, String name, int simQuantity, String network, String category, long price, int quantity, String describe) {
         super(id, brand, name, price, quantity, describe);
         this.simQuantity = simQuantity;
         this.network = network;
@@ -42,11 +49,11 @@ public class Phone extends Product {
 
     @Override
     public String toString() {
-        return "admin_folder.product_name.Phone{" +
+        return "Điện thoại {" +
                 super.toString() +
-                "Số lượng sim" + simQuantity +
+                ", Số lượng sim: " + simQuantity +
                 ", Hỗ trợ mạng (4G, 5G): '" + network + '\'' +
-                ", Mô tả: '" + category + '\'' +
+                ", Mô tả: '" + getDescribe() + '\'' +
                 ", Giá: '" + getPrice() + '\'' +
                 ", Số lượng: '" + getQuantity() + '\'' +
                 '}';

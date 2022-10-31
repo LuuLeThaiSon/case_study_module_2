@@ -1,6 +1,8 @@
 package admin_folder;
 
-public class Screen {
+import java.io.Serializable;
+
+public class Screen implements Serializable {
     private float size;
     private int resolution;
 

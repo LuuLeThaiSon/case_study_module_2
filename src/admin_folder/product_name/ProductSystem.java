@@ -36,13 +36,26 @@ public class ProductSystem {
                         addProductSubMenu();
                         break;
                     case 2:
+                        updateProductSubMenu();
+                        break;
                     case 3:
+                        removeProductSubMenu();
+                        break;
+                    case 4:
+                        productManager.displayPhoneList();
+                        break;
+                    case 5:
+                        productManager.displayLaptopList();
+                        break;
+                    case 6:
+                        productManager.displayTabletList();
+                        break;
                     case 7:
                         productManager.display();
                         break;
                 }
             } catch (Exception e) {
-                System.err.println("Nhập sai định dạng. Nhập lại!!");
+                System.out.println("❌ Nhập sai định dạng. Nhập lại!!");
             }
         } while (true);
     }
@@ -56,15 +69,69 @@ public class ProductSystem {
                 System.out.println("👉[0] Thoát");
 
                 System.out.print("Nhập lựa chọn: ");
-                int choice2 = Integer.parseInt(scanner.nextLine());
+                int choice = Integer.parseInt(scanner.nextLine());
 
-                if (choice2 == 0) {
+                if (choice > 3 || choice < 0) {
+                    System.out.println("❌ Lựa chọn không đứng. Nhập lại!");
+                } else if (choice == 0) {
                     break;
-                } else productManager.addProduct(choice2, scanner);
+                } else {
+                    productManager.addProduct(choice, scanner);
+                }
 
             } catch (Exception e) {
-                System.err.println("Nhập sai định dạng. Nhập lại!!");
+                System.out.println("❌ Nhập sai định dạng. Nhập lại!!");
             }
         } while (true);
+    }
+
+    public void updateProductSubMenu() {
+        do {
+            try {
+                System.out.println("👉[1] Điện thoại");
+                System.out.println("👉[2] Laptop");
+                System.out.println("👉[3] Máy tính bảng");
+                System.out.println("👉[0] Thoát");
+
+                System.out.print("Nhập lựa chọn: ");
+                int choice = Integer.parseInt(scanner.nextLine());
+
+                if (choice > 3 || choice < 0) {
+                    System.out.println("❌ Lựa chọn không đứng. Nhập lại!");
+                } else if (choice == 0) {
+                    break;
+                } else {
+                    productManager.updateProduct(choice, scanner);
+                }
+
+            } catch (Exception e) {
+                System.out.println("❌ Nhập sai định dạng. Nhập lại!!");
+            }
+        } while (true);
+    }
+
+    public void removeProductSubMenu() {
+        while (true) {
+            try {
+                System.out.println("👉[1] Xóa theo mã sản phẩm");
+                System.out.println("👉[2] Xóa hết tất cả sản phẩm hiện có");
+                System.out.println("👉[0] Thoát");
+
+                System.out.print("Nhập lựa chọn: ");
+                int choice = Integer.parseInt(scanner.nextLine());
+
+                if (choice > 2 || choice < 0) {
+                    System.out.println("❌ Lựa chọn không đứng. Nhập lại!");
+                } else if (choice == 0) {
+                    break;
+                } else if (choice == 1) {
+                    productManager.removeProductById(scanner);
+                } else {
+                    productManager.removeAll(scanner);
+                }
+            } catch (Exception e) {
+                System.out.println("❌ Nhập sai định dạng. Nhập lại!!");
+            }
+        }
     }
 }
