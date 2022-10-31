@@ -336,9 +336,25 @@ public class ProductManager {
         if (products.isEmpty()) {
             System.out.println("❌ Danh sách sản phẩm trống");
         } else {
-            for (Product product : products) {
-                System.out.println(product);
-            }
+            System.out.println("===================================================================================================================================");
+
+            System.out.printf("%-30s%-30s%-30s%-30s%s",
+                        "| Mã sản phẩm", "Loại sản phẩm", "Tên sản phẩm", "Giá sản phẩm","Số lượng  |\n");
+                for (Product product : products) {
+                    if (product instanceof Phone) {
+                        System.out.printf("%-30s%-29s%-28s%-20s%s",
+                                product.getId(), "Điện thoại", product.getName(),
+                                product.getPrice(), product.getQuantity() + "\n");
+                    } else if (product instanceof Laptop){
+                        System.out.printf("%-34s%-29s%-28s%-20s%s",
+                                product.getId(), "Laptop", product.getName(),
+                                product.getPrice(), product.getQuantity() + "\n");
+                    } else {
+                        System.out.printf("%-34s%-29s%-28s%-20s%s",
+                                product.getId(), "Máy tính bảng", product.getName(),
+                                product.getPrice(), product.getQuantity() + "\n");
+                    }
+                }
         }
     }
 
