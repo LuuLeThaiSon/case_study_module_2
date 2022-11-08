@@ -1,60 +1,52 @@
 package admin_folder.product_name;
-
 import admin_folder.ProductManager;
-
 import java.util.Scanner;
+import com.jakewharton.fliptables.*;
 
 public class ProductSystem {
     private final Scanner scanner;
-
     private final ProductManager productManager;
-
     public ProductSystem() {
         scanner = new Scanner(System.in);
         productManager = new ProductManager();
     }
-
     public void productAdminMenu() {
         do {
-            System.out.println("MENU");
-
             try {
-                System.out.println("👉[1] Thêm sản phẩm mới");
-                System.out.println("👉[2] Thay đổi thông tin sản phẩm");
-                System.out.println("👉[3] Xóa sản phẩm");
-                System.out.println("👉[4] Hiển thị danh sách điện thoại");
-                System.out.println("👉[5] Hiển thị danh sách laptop");
-                System.out.println("👉[6] Hiển thị danh sách máy tính bảng");
-                System.out.println("👉[7] Hiển thị tất cả sản phẩm");
-                System.out.println("👉[0] Đăng xuất");
+                String[] headers = {"ADMIN MENU"};
+                String[][] data = {{ "[1] Thêm sản phẩm mới " }, {"[2] Thay đổi thông tin sản phẩm "}, {"[3] Xóa sản phẩm "},
+                        {"[4] Hiển thị danh sách điện thoại "}, {"[5] Hiển thị danh sách laptop "}, {"[6] Hiển thị danh sách máy tính bảng "},
+                        {"[7] Hiển thị tất cả sản phẩm "},{"[8] Hiển thị danh sách khách hàng "}, {"[0] Đăng xuất "}};
+                System.out.println(FlipTable.of(headers, data));
 
-                System.out.print("Nhập lựa chọn: ");
+                System.out.print("▷▶︎ Nhập lựa chọn: ");
                 int choice1 = Integer.parseInt(scanner.nextLine());
 
                 switch (choice1) {
-                    case 1:
-                        addProductSubMenu();
-                        break;
-                    case 2:
-                        updateProductSubMenu();
-                        break;
-                    case 3:
-                        removeProductSubMenu();
-                        break;
-                    case 4:
+                    case 1 -> addProductSubMenu();
+                    case 2 -> updateProductSubMenu();
+                    case 3 -> removeProductSubMenu();
+                    case 4 -> {
+                        productManager.readFile();
                         productManager.displayPhoneList();
-                        break;
-                    case 5:
+                    }
+                    case 5 -> {
+                        productManager.readFile();
                         productManager.displayLaptopList();
-                        break;
-                    case 6:
+                    }
+                    case 6 -> {
+                        productManager.readFile();
                         productManager.displayTabletList();
-                        break;
-                    case 7:
+                    }
+                    case 7 -> {
+                        productManager.readFile();
                         productManager.display();
-                        break;
+                    }
+                    case 8 -> {productManager.displayUserList();}
+                    case 0 -> productManager.logout();
                 }
             } catch (Exception e) {
+                System.out.println(e.getMessage());
                 System.out.println("❌ Nhập sai định dạng. Nhập lại!!");
             }
         } while (true);
@@ -63,12 +55,11 @@ public class ProductSystem {
     public void addProductSubMenu() {
         do {
             try {
-                System.out.println("👉[1] Điện thoại");
-                System.out.println("👉[2] Laptop");
-                System.out.println("👉[3] Máy tính bảng");
-                System.out.println("👉[0] Thoát");
+                String[] headers = { "THÊM SẢN PHẨM" };
+                String[][] data = { { "[1] Điện thoại" }, { "[2] Laptop" }, { "[3] Máy tính bảng" }, { "[0] Thoát" }  };
+                System.out.println(FlipTable.of(headers, data));
 
-                System.out.print("Nhập lựa chọn: ");
+                System.out.print("▷▶ Nhập lựa chọn: ");
                 int choice = Integer.parseInt(scanner.nextLine());
 
                 if (choice > 3 || choice < 0) {
@@ -88,12 +79,11 @@ public class ProductSystem {
     public void updateProductSubMenu() {
         do {
             try {
-                System.out.println("👉[1] Điện thoại");
-                System.out.println("👉[2] Laptop");
-                System.out.println("👉[3] Máy tính bảng");
-                System.out.println("👉[0] Thoát");
+                String[] headers = { "SỬA SẢN PHẨM" };
+                String[][] data = { { "[1] Điện thoại" }, { "[2] Laptop" }, { "[3] Máy tính bảng" }, { "[0] Thoát" }  };
+                System.out.println(FlipTable.of(headers, data));
 
-                System.out.print("Nhập lựa chọn: ");
+                System.out.print("▷▶ Nhập lựa chọn: ");
                 int choice = Integer.parseInt(scanner.nextLine());
 
                 if (choice > 3 || choice < 0) {
@@ -113,11 +103,11 @@ public class ProductSystem {
     public void removeProductSubMenu() {
         while (true) {
             try {
-                System.out.println("👉[1] Xóa theo mã sản phẩm");
-                System.out.println("👉[2] Xóa hết tất cả sản phẩm hiện có");
-                System.out.println("👉[0] Thoát");
+                String[] headers = { "XÓA SẢN PHẨM" };
+                String[][] data = { { "[1] Xóa theo mã sản phẩm" }, { "[2] Xóa hết tất cả sản phẩm hiện có" }, { "[0] Thoát" }  };
+                System.out.println(FlipTable.of(headers, data));
 
-                System.out.print("Nhập lựa chọn: ");
+                System.out.print("▷▶ Nhập lựa chọn: ");
                 int choice = Integer.parseInt(scanner.nextLine());
 
                 if (choice > 2 || choice < 0) {

@@ -3,16 +3,35 @@ package admin_folder;
 import admin_folder.product_name.Laptop;
 import admin_folder.product_name.Phone;
 import admin_folder.product_name.Tablet;
+import de.vandermeer.asciitable.AsciiTable;
+import read_write_file.ReadWriteFile;
+import user_folder.user_account.User;
+import user_folder.user_account.UserSystem;
 
-import java.io.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class ProductManager {
+import com.jakewharton.fliptables.*;
+
+public class ProductManager implements Serializable {
+    ReadWriteFile<ArrayList<Product>> readWriteFile = new ReadWriteFile<>();
+    ReadWriteFile<ArrayList<User>> readWriteFileUser = new ReadWriteFile<>();
     ArrayList<Product> products;
+    ArrayList<User> users;
 
     public ProductManager() {
-        products = readFile();
+        if (readFile() == null) {
+            products = new ArrayList<>();
+        } else {
+            products = readFile();
+        }
+
+        if (readFileUser() == null) {
+            users = new ArrayList<>();
+        } else {
+            users = readFileUser();
+        }
     }
 
     public ArrayList<Product> getProducts() {
@@ -24,53 +43,26 @@ public class ProductManager {
     }
 
     public void writeFile() {
-        File file = new File("src/admin_folder/product_data/product_list.txt");
-
-        try {
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
-            objectOutputStream.writeObject(products);
-            objectOutputStream.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        readWriteFile.writeFile(products, "src/admin_folder/product_data/product_list.txt");
     }
 
     public ArrayList<Product> readFile() {
-        File file = new File("src/admin_folder/product_data/product_list.txt");
-        ArrayList<Product> productArrayList = new ArrayList<>();
+        return readWriteFile.readFile("src/admin_folder/product_data/product_list.txt");
+    }
 
-        try {
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            FileInputStream fileInputStream = new FileInputStream(file);
-            if (fileInputStream.available() > 0) {
-                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-                productArrayList = (ArrayList<Product>) objectInputStream.readObject();
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
-        return productArrayList;
+    public ArrayList<User> readFileUser() {
+        return readWriteFileUser.readFile("src/login/user_data/user_data.txt");
     }
 
     public void addProduct(int choice, Scanner scanner) {
         try {
             System.out.print("Mã sản phẩm: ");
             String id = scanner.nextLine();
-
             if (checkId(id) == 1) {
-
                 System.out.print("Hãng: ");
                 String brand = scanner.nextLine();
                 System.out.print("Tên sản phẩm: ");
                 String name = scanner.nextLine();
-
                 if (choice == 1) {
                     System.out.print("Nhập loại máy (Androi / Iphone): ");
                     String category = scanner.nextLine();
@@ -78,7 +70,6 @@ public class ProductManager {
                     int simQuantity = Integer.parseInt(scanner.nextLine());
                     System.out.print("Hỗ trợ mạng (4G, 5G): ");
                     String network = scanner.nextLine();
-
                     Phone phone = new Phone(id, brand, name, simQuantity, network, category);
                     products.add(sameProperty(phone, scanner));
                 } else if (choice == 2) {
@@ -86,23 +77,10 @@ public class ProductManager {
                     int memory = Integer.parseInt(scanner.nextLine());
                     System.out.print("Dung lượng ram: ");
                     int memoryRam = Integer.parseInt(scanner.nextLine());
-                    System.out.print("Kích thước màn hình: ");
-                    float screenSize = Float.parseFloat(scanner.nextLine());
-                    System.out.print("Độ phân giải màn hình: ");
-                    int screenResolution = Integer.parseInt(scanner.nextLine());
-
-                    Screen laptopScreen = new Screen(screenSize, screenResolution);
-                    Laptop laptop = new Laptop(id, brand, name, memory, memoryRam, laptopScreen);
-
+                    Laptop laptop = new Laptop(id, brand, name, memory, memoryRam, addScreen(scanner));
                     products.add(sameProperty(laptop, scanner));
                 } else {
-                    System.out.print("Kích thước màn hình: ");
-                    float screenSize = Float.parseFloat(scanner.nextLine());
-                    System.out.print("Độ phân giải màn hình: ");
-                    int screenResolution = Integer.parseInt(scanner.nextLine());
-                    Screen tabletScreen = new Screen(screenSize, screenResolution);
-
-                    Tablet tablet = new Tablet(id, brand, name, tabletScreen);
+                    Tablet tablet = new Tablet(id, brand, name, addScreen(scanner));
                     products.add(sameProperty(tablet, scanner));
                 }
             } else if (checkId(id) == -1) {
@@ -112,6 +90,14 @@ public class ProductManager {
             System.out.println("❌ Nhập sai định dạng. Nhập lại!!");
         }
         writeFile();
+    }
+
+    public Screen addScreen(Scanner scanner) {
+        System.out.print("Kích thước màn hình: ");
+        float screenSize = Float.parseFloat(scanner.nextLine());
+        System.out.print("Độ phân giải màn hình: ");
+        int screenResolution = Integer.parseInt(scanner.nextLine());
+        return new Screen(screenSize, screenResolution);
     }
 
     public void updateProduct(int choice, Scanner scanner) {
@@ -150,7 +136,6 @@ public class ProductManager {
                             } else {
                                 System.out.println("Mã sản phẩm " + id + " không thuộc danh sách điện thoại");
                             }
-
                         } else if (choice == 2) {
                             if (products.get(fineIndex(id)) instanceof Laptop) {
                                 System.out.print("Dung lượng bộ nhớ: ");
@@ -167,7 +152,6 @@ public class ProductManager {
                                 String screenSize = scanner.nextLine();
                                 System.out.print("Độ phân giải màn hình: ");
                                 String screenResolution = scanner.nextLine();
-
                                 if (!screenSize.equals("") && !screenResolution.equals("")) {
                                     Screen screen = new Screen(Float.parseFloat(screenSize), Integer.parseInt(screenResolution));
                                     ((Laptop) products.get(fineIndex(id))).setScreen(screen);
@@ -177,7 +161,6 @@ public class ProductManager {
                             } else {
                                 System.out.println("Mã sản phẩm " + id + " không thuộc danh sách laptop");
                             }
-
                         } else {
                             if (products.get(fineIndex(id)) instanceof Tablet) {
                                 System.out.print("Kích thước màn hình: ");
@@ -203,6 +186,26 @@ public class ProductManager {
         writeFile();
     }
 
+    public void displayUserList() {
+        users = readFileUser();
+        if (users == null) {
+            System.out.println("Danh sách khách hàng trống");
+        } else {
+            AsciiTable at = new AsciiTable();
+            at.addRule();
+            at.addRow(null, null, null, null, null, "DANH SÁCH KHÁCH HÀNG");
+            at.addRule();
+            at.addRow("Tên đăng nhập", "Họ và tên", "Tuổi", "Email", "Số điện thoại", "Mật khẩu");
+            at.addRule();
+            for (User user : users) {
+                at.addRow(user.getAccount(), user.getName(), user.getAge(), user.getEmail(),
+                        user.getPhoneNumber(), user.getPassWord());
+                at.addRule();
+            }
+            System.out.println(at.render(150));
+        }
+    }
+
     public Product sameProperty(Product product, Scanner scanner) {
         System.out.print("Thêm mô tả sản phẩm: ");
         String describe = scanner.nextLine();
@@ -213,7 +216,6 @@ public class ProductManager {
         System.out.print("Số lượng sản phẩm: ");
         int quantity = Integer.parseInt(scanner.nextLine());
         product.setQuantity(quantity);
-
         return product;
     }
 
@@ -332,53 +334,118 @@ public class ProductManager {
     }
 
     public void display() {
+        products = readFile();
         readFile();
         if (products.isEmpty()) {
             System.out.println("❌ Danh sách sản phẩm trống");
         } else {
-            System.out.println("===================================================================================================================================");
-
-            System.out.printf("%-30s%-30s%-30s%-30s%s",
-                        "| Mã sản phẩm", "Loại sản phẩm", "Tên sản phẩm", "Giá sản phẩm","Số lượng  |\n");
-                for (Product product : products) {
-                    if (product instanceof Phone) {
-                        System.out.printf("%-30s%-29s%-28s%-20s%s",
-                                product.getId(), "Điện thoại", product.getName(),
-                                product.getPrice(), product.getQuantity() + "\n");
-                    } else if (product instanceof Laptop){
-                        System.out.printf("%-34s%-29s%-28s%-20s%s",
-                                product.getId(), "Laptop", product.getName(),
-                                product.getPrice(), product.getQuantity() + "\n");
-                    } else {
-                        System.out.printf("%-34s%-29s%-28s%-20s%s",
-                                product.getId(), "Máy tính bảng", product.getName(),
-                                product.getPrice(), product.getQuantity() + "\n");
-                    }
+            String[] headers = {"Mã sản phẩm", "Loại sản phẩm", "Tên sản phẩm", "Nhãn hàng", "Giá", "Số lượng"};
+            Object[][] data = new Object[products.size()][6];
+            for (int i = 0; i < products.size(); i++) {
+                if (products.get(i) instanceof Phone) {
+                    data[i] = new Object[]{products.get(i).getId(), "Điện thoại", products.get(i).getName(),
+                            products.get(i).getBrand(), products.get(i).getPrice(),
+                            products.get(i).getQuantity()};
                 }
+                if (products.get(i) instanceof Laptop) {
+                    data[i] = new Object[]{products.get(i).getId(), "Laptop", products.get(i).getName(),
+                            products.get(i).getBrand(), products.get(i).getPrice(),
+                            products.get(i).getQuantity()};
+                } else if (products.get(i) instanceof Tablet) {
+                    data[i] = new Object[]{products.get(i).getId(), "Máy tính bảng", products.get(i).getName(),
+                            products.get(i).getBrand(), products.get(i).getPrice(),
+                            products.get(i).getQuantity()};
+                }
+            }
+            System.out.println(FlipTableConverters.fromObjects(headers, data));
         }
     }
 
     public void displayPhoneList() {
+        products = readFile();
+        ArrayList<Product> phoneList = new ArrayList<>();
+        boolean flag = false;
         for (Product product : products) {
             if (product instanceof Phone) {
-                System.out.println(product);
+                phoneList.add(product);
+                flag = true;
             }
         }
+
+        if (flag) {
+            String[] headers = {"Mã sản phẩm", "Tên sản phẩm", "Android / Iphone", "Số lượng sim", "Hỗ trợ 4G/ 5G", "Mô tả", "Giá", "Số lượng"};
+            Object[][] data = new Object[phoneList.size()][8];
+            for (int i = 0; i < phoneList.size(); i++) {
+                data[i] = new Object[]{phoneList.get(i).getId(), phoneList.get(i).getName(),
+                        ((Phone) phoneList.get(i)).getCategory(), ((Phone) phoneList.get(i)).getSimQuantity(), ((Phone) phoneList.get(i)).getNetwork(),
+                        phoneList.get(i).getDescribe(), phoneList.get(i).getPrice(), phoneList.get(i).getQuantity()
+                };
+            }
+            System.out.println(FlipTableConverters.fromObjects(headers, data));
+        } else {
+            System.out.println("Danh sách điện thoại trống");
+        }
+
     }
 
     public void displayLaptopList() {
+        products = readFile();
+        ArrayList<Product> laptopList = new ArrayList<>();
+        boolean flag = false;
         for (Product product : products) {
             if (product instanceof Laptop) {
-                System.out.println(product);
+                laptopList.add(product);
+                flag = true;
             }
+        }
+        if (!flag) {
+            System.out.println("Danh sách không có Laptop");
+        } else {
+            String[] headers = {"Mã sản phẩm", "Tên sản phẩm", "Dung lượng bộ nhớ", "Dung lượng ram (G)",
+                    "Kích thước màn hình", "Độ phân giải màn hình",
+                    "Mô tả", "Giá", "Số lượng"};
+            Object[][] data = new Object[laptopList.size()][8];
+            for (int i = 0; i < laptopList.size(); i++) {
+                data[i] = new Object[]{laptopList.get(i).getId(), laptopList.get(i).getName(),
+                        ((Laptop) laptopList.get(i)).getMemory(), ((Laptop) laptopList.get(i)).getMemoryRam(),
+                        ((Laptop) laptopList.get(i)).getScreen().getSize(), ((Laptop) laptopList.get(i)).getScreen().getResolution(),
+                        laptopList.get(i).getDescribe(), laptopList.get(i).getPrice(), laptopList.get(i).getQuantity()
+                };
+            }
+            System.out.println(FlipTableConverters.fromObjects(headers, data));
         }
     }
 
     public void displayTabletList() {
+        products = readFile();
+        ArrayList<Product> tabletList = new ArrayList<>();
+        boolean flag = false;
         for (Product product : products) {
             if (product instanceof Tablet) {
-                System.out.println(product);
+                tabletList.add(product);
+                flag = true;
             }
         }
+        if (!flag) {
+            System.out.println("Danh sách không có máy tính bảng");
+        } else {
+            String[] headers = {"Mã sản phẩm", "Tên sản phẩm",
+                    "Kích thước màn hình", "Độ phân giải màn hình",
+                    "Mô tả", "Giá", "Số lượng"};
+            Object[][] data = new Object[tabletList.size()][8];
+            for (int i = 0; i < tabletList.size(); i++) {
+                data[i] = new Object[]{tabletList.get(i).getId(), tabletList.get(i).getName(),
+                        ((Tablet) tabletList.get(i)).getScreen().getSize(), ((Tablet) tabletList.get(i)).getScreen().getResolution(),
+                        tabletList.get(i).getDescribe(), tabletList.get(i).getPrice(), tabletList.get(i).getQuantity()
+                };
+            }
+            System.out.println(FlipTableConverters.fromObjects(headers, data));
+        }
     }
+
+    public void logout() {
+        UserSystem userSystem = new UserSystem();
+        userSystem.bigMenu();
+    }
+
 }
