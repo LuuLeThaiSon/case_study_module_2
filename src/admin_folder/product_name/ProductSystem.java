@@ -16,7 +16,7 @@ public class ProductSystem {
                 String[] headers = {"ADMIN MENU"};
                 String[][] data = {{ "[1] Thêm sản phẩm mới " }, {"[2] Thay đổi thông tin sản phẩm "}, {"[3] Xóa sản phẩm "},
                         {"[4] Hiển thị danh sách điện thoại "}, {"[5] Hiển thị danh sách laptop "}, {"[6] Hiển thị danh sách máy tính bảng "},
-                        {"[7] Hiển thị tất cả sản phẩm "},{"[8] Hiển thị danh sách khách hàng "}, {"[0] Đăng xuất "}};
+                        {"[7] Hiển thị tất cả sản phẩm "},{"[8] Sắp xếp sản phẩm theo giá "}, {"[9] Hiển thị danh sách khách hàng "}, {"[0] Đăng xuất "}};
                 System.out.println(FlipTable.of(headers, data));
 
                 System.out.print("▷▶︎ Nhập lựa chọn: ");
@@ -42,7 +42,8 @@ public class ProductSystem {
                         productManager.readFile();
                         productManager.display();
                     }
-                    case 8 -> {productManager.displayUserList();}
+                    case 8 -> productManager.sortProductByPrice();
+                    case 9 -> productManager.displayUserList();
                     case 0 -> productManager.logout();
                 }
             } catch (Exception e) {

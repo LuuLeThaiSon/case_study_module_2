@@ -27,8 +27,12 @@ public class UserMenuSystem implements Serializable {
             try {
                 String[] headers = {"MENU " + user.getName()};
                 String[][] data = {{"[1] Hiển thị danh sách điện thoại "}, {"[2] Hiển thị danh sách laptop "},
-                        {"[3] Hiển thị danh sách máy tính bảng "}, {"[4] Hiển thị tất cả sản phẩm "},
-                        {"[5] Giỏ hàng "}, {"[0] Đăng xuất "}};
+                        {"[3] Hiển thị danh sách máy tính bảng "},
+                        {"[4] Hiển thị tất cả sản phẩm "},
+                        {"[5] Sắp xếp sản phẩm theo giá"},
+                        {"[6] Tìm sản phẩm theo tên "},
+                        {"[7] Giỏ hàng "},
+                        {"[0] Đăng xuất "}};
                 System.out.println(FlipTable.of(headers, data));
 
                 System.out.print("▷▶︎ Nhập lựa chọn: ");
@@ -52,6 +56,10 @@ public class UserMenuSystem implements Serializable {
                         productManager.display();
                     }
                     case 5 -> {
+                        productManager.sortProductByPrice();
+                    }
+                    case 6 -> {productManager.searchByName(scanner);}
+                    case 7 -> {
                         productManager.displayPhoneList();
                         productManager.displayLaptopList();
                         productManager.displayTabletList();
@@ -70,8 +78,9 @@ public class UserMenuSystem implements Serializable {
         do {
             try {
                 String[] headers = {"GIỎ HÀNG CỦA " + user.getName()};
-                String[][] data = {{"[1] Xem các sản phẩm trong giỏ hàng "}, {"[2] Thêm vào giỏ hàng "}, {"[3] Xóa sản phẩm trong giỏ hàng "}, {"[4] Thanh toán "},
-                        {"[5] In hóa đơn "}, {"[0] Thoát "}};
+                String[][] data = {{"[1] Xem các sản phẩm trong giỏ hàng "}, {"[2] Thêm vào giỏ hàng "},
+                        {"[3] Thanh toán "},
+                        {"[0] Thoát "}};
                 System.out.println(FlipTable.of(headers, data));
 
                 System.out.print("▷▶︎ Nhập lựa chọn: ");
@@ -85,16 +94,12 @@ public class UserMenuSystem implements Serializable {
                         break;
                     } else {
                         switch (choice) {
-                            case 1:
+                            case 1 -> {
+//                                cartManager.readFileCart();
                                 cartManager.displayCart(user);
-                                break;
-                            case 2:
-                                cartManager.addCart(scanner, user);
-                                break;
-                            case 3:
-                            case 4:
-                                cartManager.payCart(scanner, user);
-                                break;
+                            }
+                            case 2 -> cartManager.addCart(scanner, user);
+                            case 3 -> cartManager.payCart(scanner, user);
                         }
                     }
                 }

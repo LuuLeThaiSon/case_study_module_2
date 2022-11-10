@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import com.jakewharton.fliptables.*;
-import user_folder.user_account.UserManager;
 
 public class CartManager implements Serializable {
     ArrayList<Cart> carts;
@@ -80,13 +79,18 @@ public class CartManager implements Serializable {
 
         for (Product p : products) {
             if (p.getId().equals(id)) {
-                OderCart oderCart = new OderCart(p, quantity);
-                oderCart.setQuantity(quantity);
-                productCartArrayList.add(oderCart);
-                int index = indexUser(user);
-                Cart cart = new Cart(user, productCartArrayList);
-                carts.set(index, cart);
-                flag = true;
+                if (quantity > p.getQuantity()) {
+                    System.out.println("Số lượng sản phẩm trong kho hiện có là: " + p.getQuantity());
+                    System.out.println("Mời nhập lại");
+                    break;
+                } else {
+                    OderCart oderCart = new OderCart(p, quantity);
+                    productCartArrayList.add(oderCart);
+                    int index = indexUser(user);
+                    Cart cart = new Cart(user, productCartArrayList);
+                    carts.set(index, cart);
+                    flag = true;
+                }
             }
         }
         if (flag) {
@@ -94,6 +98,7 @@ public class CartManager implements Serializable {
         } else {
             System.out.println("Không có sản phẩm mã " + id);
         }
+
         writeFile();
         writeFileOderCart();
     }
@@ -101,23 +106,29 @@ public class CartManager implements Serializable {
     public void payCart(Scanner scanner, User user) {
         int indexUser = indexUser(user);
         double totalPay = 0;
-        System.out.print("Đồng ý mua hàng (Y / N): ");
-        String confirm = scanner.nextLine();
-        if (confirm.equalsIgnoreCase("y")) {
-            for (int i = 0; i < carts.get(indexUser).getCart().size(); i++) {
-                totalPay += carts.get(indexUser).getCart().get(i).getProduct().getPrice() *
-                        carts.get(indexUser).getCart().get(i).getProduct().getQuantity();
-                for (Product product : products) {
-                    if (product.getId().equals(carts.get(indexUser).getCart().get(i).getProduct().getId())) {
-                        product.setQuantity(product.getQuantity() - carts.get(indexUser).getCart().get(i).getQuantity());
+        if (checkCartEmpty(user)) {
+            System.out.print("Đồng ý mua hàng (Y / N): ");
+            String confirm = scanner.nextLine();
+            if (confirm.equalsIgnoreCase("y")) {
+                for (int i = 0; i < carts.get(indexUser).getCart().size(); i++) {
+                    totalPay += carts.get(indexUser).getCart().get(i).getProduct().getPrice() *
+                            carts.get(indexUser).getCart().get(i).getProduct().getQuantity();
+                    for (Product product : products) {
+                        if (product.getId().equals(carts.get(indexUser).getCart().get(i).getProduct().getId())) {
+                            product.setQuantity(product.getQuantity() - carts.get(indexUser).getCart().get(i).getQuantity());
+                        }
                     }
                 }
+                carts.get(indexUser).setCart(null);
+                productCartArrayList.clear();
+                System.out.println("Giá bạn phải thanh toán là: " + totalPay + "VNĐ");
+            } else {
+                System.out.println("Đã hủy lệnh thanh toán");
             }
-            carts.get(indexUser).setCart(null);
-            System.out.println("Giá bạn phải thanh toán là: " + totalPay + "VNĐ");
         } else {
-            System.out.println("Đã hủy lệnh thanh toán");
+            System.out.println("Giỏ hàng rỗng");
         }
+
         writeFile();
         writeFileOderCart();
         writeFileProduct();

@@ -10,6 +10,7 @@ import user_folder.user_account.UserSystem;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 
 import com.jakewharton.fliptables.*;
@@ -332,9 +333,11 @@ public class ProductManager implements Serializable {
             System.out.println("❌ Nhập sai. Hủy bỏ lệnh xóa");
         }
     }
-
-    public void display() {
-        products = readFile();
+    public void display(){
+        display(readFile());
+    }
+    public void display(ArrayList<Product> list) {
+        products = list;
         readFile();
         if (products.isEmpty()) {
             System.out.println("❌ Danh sách sản phẩm trống");
@@ -358,6 +361,27 @@ public class ProductManager implements Serializable {
                 }
             }
             System.out.println(FlipTableConverters.fromObjects(headers, data));
+        }
+    }
+
+    public void searchByName(Scanner scanner) {
+        ArrayList<Product> productArrayList = new ArrayList<>();
+        System.out.print("Nhập từ khóa cần tìm kiếm: ");
+        String search = scanner.nextLine().toLowerCase();
+
+        if (search.equals("")) {
+            display();
+        } else {
+            for (Product product : products) {
+                if (product.getName().toLowerCase().contains(search)) {
+                    productArrayList.add(product);
+                }
+            }
+            if (productArrayList.isEmpty()) {
+                System.out.println("Không có sản phẩm nào phù hợp");
+            } else {
+                display(productArrayList);
+            }
         }
     }
 
@@ -441,6 +465,13 @@ public class ProductManager implements Serializable {
             }
             System.out.println(FlipTableConverters.fromObjects(headers, data));
         }
+    }
+
+    public void sortProductByPrice() {
+        ArrayList<Product> productArrayList;
+        productArrayList = (ArrayList<Product>) products.clone();
+        productArrayList.sort(Comparator.comparing(Product::getPrice));
+        display(productArrayList);
     }
 
     public void logout() {
